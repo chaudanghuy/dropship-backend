@@ -1,103 +1,233 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { dashboardStats, products } from "@/lib/data";
+import { DollarSign, ShoppingCart, Package, AlertTriangle, TrendingUp, Eye } from "lucide-react";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import Link from "next/link";
+
+export default function Dashboard() {
+  const stats = dashboardStats;
+  const lowStockProducts = products.filter(p => p.stock <= p.minStock);
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <div className="flex flex-col gap-6 p-6">
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <SidebarTrigger />
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Welcome to your POS system overview</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Key Metrics */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Today's Sales</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${stats.todaySales.toFixed(2)}</div>
+            <p className="text-xs text-muted-foreground">
+              <TrendingUp className="inline h-3 w-3 mr-1" />
+              +12% from yesterday
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Transactions</CardTitle>
+            <ShoppingCart className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.todayTransactions}</div>
+            <p className="text-xs text-muted-foreground">
+              +2 from yesterday
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+            <Package className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.totalProducts}</div>
+            <p className="text-xs text-muted-foreground">
+              Active products in inventory
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Low Stock Items</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-600">{stats.lowStockItems}</div>
+            <p className="text-xs text-muted-foreground">
+              Need restocking
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        {/* Top Products */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Top Products</CardTitle>
+            <CardDescription>Best performing products today</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {stats.topProducts.map((item, index) => (
+              <div key={item.product.id} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-muted rounded-md flex items-center justify-center text-sm font-medium">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <p className="font-medium">{item.product.name}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Qty: {item.quantity}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">${item.revenue.toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground">Revenue</p>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Recent Transactions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Transactions</CardTitle>
+            <CardDescription>Latest sales activity</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {stats.recentTransactions.map((transaction) => (
+              <div key={transaction.id} className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-md flex items-center justify-center">
+                    <ShoppingCart className="h-4 w-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium">
+                      {transaction.customer?.name || "Guest"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {new Date(transaction.createdAt).toLocaleTimeString()}
+                    </p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="font-medium">${transaction.total.toFixed(2)}</p>
+                  <Badge variant="outline" className="text-xs">
+                    {transaction.paymentMethod.type}
+                  </Badge>
+                </div>
+              </div>
+            ))}
+            <div className="pt-2">
+              <Button variant="outline" size="sm" className="w-full" asChild>
+                <Link href="/transactions">
+                  <Eye className="h-4 w-4 mr-2" />
+                  View All Transactions
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Low Stock Alert */}
+      {lowStockProducts.length > 0 && (
+        <Card className="border-orange-200 bg-orange-50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-800">
+              <AlertTriangle className="h-5 w-5" />
+              Low Stock Alert
+            </CardTitle>
+            <CardDescription className="text-orange-700">
+              The following products are running low and need restocking
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {lowStockProducts.map((product) => (
+                <div key={product.id} className="flex items-center justify-between p-3 bg-white rounded-lg">
+                  <div>
+                    <p className="font-medium">{product.name}</p>
+                    <p className="text-sm text-muted-foreground">SKU: {product.sku}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-medium text-red-600">
+                      {product.stock} left
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Min: {product.minStock}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4">
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/inventory">
+                  View Inventory
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+          <CardDescription>Common tasks and shortcuts</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 md:grid-cols-3 lg:grid-cols-4">
+            <Button asChild>
+              <Link href="/sales">
+                <ShoppingCart className="h-4 w-4 mr-2" />
+                New Sale
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/products">
+                <Package className="h-4 w-4 mr-2" />
+                Add Product
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/customers">
+                <Eye className="h-4 w-4 mr-2" />
+                View Customers
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link href="/reports">
+                <TrendingUp className="h-4 w-4 mr-2" />
+                View Reports
+              </Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
